@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Application.Models.DataTransferObjects;
@@ -33,12 +34,31 @@ namespace Application.Controllers
             var createAudit = _mapper.Map<Audit>(auditDto);
             try
             {
+                createAudit.Timestamp = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
+                await _auditRepository.Create(createAudit);
                 return NoContent();
             }
             catch (Exception e)
             {
                 return BadRequest(new MessageObj(e.Message));
             }
+        }
+
+        [HttpGet("user/{userId}")]
+        public async Task<IActionResult> Get([FromRoute] string userId, [FromQuery] int pageSize = -1, [FromQuery] int pageNumber = -1)
+        {
+            List<Audit> audit = null;
+
+            if (pageSize <= 0 || pageNumber <= 0)
+            {
+                audit = await _auditRepository.GetByUserId(userId);
+            }
+            else
+            {
+                audit = _auditRepository.GetByUserId(userId, pageSize, pageNumber);
+            }
+
+            return Ok(audit);
         }
     }
 }

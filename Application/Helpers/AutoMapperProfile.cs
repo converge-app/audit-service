@@ -10,7 +10,6 @@ namespace Application.Helpers
         {
             CreateMap<Audit, AuditDto>();
             CreateMap<AuditDto, Audit>();
-            CreateMap<AuditUpdateDto, Audit>();
             CreateMap<AuditCreationDto, Audit>();
         }
     }
