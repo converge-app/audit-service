@@ -6,76 +6,76 @@ using MongoDB.Driver;
 
 namespace Application.Repositories
 {
-    public interface IBidRepository
+    public interface IAuditRepository
     {
-        Task<List<Bid>> Get();
-        Task<Bid> GetById(string id);
-        Task<List<Bid>> GetByProject(string projectId);
-        Task<List<Bid>> GetByFreelancerId(string freelancerId);
-        Task<List<Bid>> GetByProjectAndFreelancer(string projectId, string freelancerId);
-        Task<Bid> Create(Bid bid);
-        Task Update(string id, Bid bidIn);
-        Task Remove(Bid bidIn);
+        Task<List<Audit>> Get();
+        Task<Audit> GetById(string id);
+        Task<List<Audit>> GetByProject(string projectId);
+        Task<List<Audit>> GetByFreelancerId(string freelancerId);
+        Task<List<Audit>> GetByProjectAndFreelancer(string projectId, string freelancerId);
+        Task<Audit> Create(Audit audit);
+        Task Update(string id, Audit auditIn);
+        Task Remove(Audit auditIn);
         Task Remove(string id);
     }
 
-    public class BidRepository : IBidRepository
+    public class AuditRepository : IAuditRepository
     {
-        private readonly IMongoCollection<Bid> _bids;
+        private readonly IMongoCollection<Audit> _audit;
 
-        public BidRepository(IDatabaseContext dbContext)
+        public AuditRepository(IDatabaseContext dbContext)
         {
             if (dbContext.IsConnectionOpen())
-                _bids = dbContext.Bids;
+                _audit = dbContext.Audit;
         }
 
-        public async Task<List<Bid>> Get()
+        public async Task<List<Audit>> Get()
         {
-            return await (await _bids.FindAsync(bid => true)).ToListAsync();
+            return await (await _audit.FindAsync(audit => true)).ToListAsync();
         }
 
-        public async Task<Bid> GetById(string id)
+        public async Task<Audit> GetById(string id)
         {
-            return await (await _bids.FindAsync(bidding => bidding.Id == id)).FirstOrDefaultAsync();
+            return await (await _audit.FindAsync(audit => audit.Id == id)).FirstOrDefaultAsync();
         }
 
-        public async Task<List<Bid>> GetByProject(string projectId)
+        public async Task<List<Audit>> GetByProject(string projectId)
         {
-            return await (await _bids.FindAsync(bid => bid.ProjectId == projectId)).ToListAsync();
+            return await (await _audit.FindAsync(audit => audit.ProjectId == projectId)).ToListAsync();
         }
 
-        public async Task<List<Bid>> GetByFreelancerId(string freelancerId)
+        public async Task<List<Audit>> GetByFreelancerId(string freelancerId)
         {
-            return await (await _bids.FindAsync(bid => bid.FreelancerId == freelancerId)).ToListAsync();
+            return await (await _audit.FindAsync(audit => audit.FreelancerId == freelancerId)).ToListAsync();
         }
 
-        public async Task<List<Bid>> GetByProjectAndFreelancer(string projectId, string freelancerId)
+        public async Task<List<Audit>> GetByProjectAndFreelancer(string projectId, string freelancerId)
         {
             return await (
-                await _bids.FindAsync(
-                    bid => bid.ProjectId == projectId && bid.FreelancerId == freelancerId)
+                await _audit.FindAsync(
+                    audit => audit.ProjectId == projectId && audit.FreelancerId == freelancerId)
             ).ToListAsync();
         }
 
-        public async Task<Bid> Create(Bid bid)
+        public async Task<Audit> Create(Audit audit)
         {
-            await _bids.InsertOneAsync(bid);
-            return bid;
+            await _audit.InsertOneAsync(audit);
+            return audit;
         }
 
-        public async Task Update(string id, Bid bidIn)
+        public async Task Update(string id, Audit auditIn)
         {
-            await _bids.ReplaceOneAsync(bidding => bidding.Id == id, bidIn);
+            await _audit.ReplaceOneAsync(audit => audit.Id == id, auditIn);
         }
 
-        public async Task Remove(Bid bidIn)
+        public async Task Remove(Audit auditIn)
         {
-            await _bids.DeleteOneAsync(bidding => bidding.Id == bidIn.Id);
+            await _audit.DeleteOneAsync(audit => audit.Id == auditIn.Id);
         }
 
         public async Task Remove(string id)
         {
-            await _bids.DeleteOneAsync(bidding => bidding.Id == id);
+            await _audit.DeleteOneAsync(audit => audit.Id == id);
         }
     }
 }

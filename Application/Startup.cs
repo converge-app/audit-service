@@ -2,7 +2,6 @@
 using Application.Database;
 using Application.Helpers;
 using Application.Repositories;
-using Application.Services;
 using Application.Utility.ClientLibrary;
 using Application.Utility.Database;
 using Application.Utility.Middleware;
@@ -55,16 +54,15 @@ namespace Application
 
             var appSettings = Configuration.GetSection("AppSettings").Get<AppSettings>();
             services.AddTokenValidation(appSettings.Secret);
-            services.AddScoped<IBidRepository, BidRepository>();
-            services.AddScoped<IBidService, BidService>();
+            services.AddScoped<IAuditRepository, AuditRepository>();
             services.AddTracing(options =>
             {
                 options.JaegerAgentHost = Environment.GetEnvironmentVariable("JAEGER_AGENT_HOST");
-                options.ServiceName = "biddings-service";
+                options.ServiceName = "audits-service";
                 options.LoggerFactory = _loggerFactory;
             });
 
-            services.AddApiDocumentation("Biddings");
+            services.AddApiDocumentation("Audits");
 
             services.AddHealthChecks();
         }
@@ -84,7 +82,7 @@ namespace Application
             app.UseRequestMiddleware();
 
             app.UseAuthentication();
-            app.UseApiDocumentation("Biddings");
+            app.UseApiDocumentation("Audits");
 
             app.UseMvc();
         }
